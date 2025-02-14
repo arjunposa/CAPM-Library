@@ -1,0 +1,22 @@
+{
+	"library_external_access": {
+		"application_user": {
+			"global_roles": [
+				{
+					"roles": [
+						"LIBRARY_CROLE"
+					]
+				}
+			]
+		},
+		"object_owner": {
+			"global_roles": [
+				{
+					"roles": [
+						"LIBRARY_CROLE"
+					]
+				}
+			]
+		}
+	}
+}

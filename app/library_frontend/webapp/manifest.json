@@ -1,0 +1,136 @@
+{
+  "_version": "1.65.0",
+  "sap.app": {
+    "id": "libraryfrontend",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:basic",
+      "version": "1.16.3",
+      "toolsId": "dc01345a-8f8d-40ba-bdd3-42d6420a33cf"
+    },
+    "dataSources": {
+      "mainService": {
+        "uri": "/odata/v4/library/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "odataVersion": "4.0"
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.132.1",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "libraryfrontend.i18n.i18n"
+        }
+      },
+      "LibraryData": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      }
+    },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/style.css"
+        }
+      ]
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "controlAggregation": "pages",
+        "controlId": "app",
+        "transition": "slide",
+        "type": "View",
+        "viewType": "XML",
+        "path": "libraryfrontend.view"
+      },
+      "routes": [
+        {
+          "name": "RouteHome",
+          "pattern": ":?query:",
+          "target": [
+            "TargetHome"
+          ]
+        },
+        {
+          "name": "RouteBookdetail",  
+          "pattern": "bookID={bookId}&ISBN={ISBN}",
+          "target": [
+            "TargetBookdetail"
+          ]
+        },
+        {
+          "name": "RouteCustomerDetail",  
+          "pattern": "customerID={id}&email={email}",
+          "target": [
+            "TargetCustomerDetail"
+          ]
+        }
+      ],
+      "targets": {
+        "TargetHome": {
+          "id": "Home",
+          "name": "Home"
+        },
+        "TargetBookdetail": {
+          "id": "bookDetail",
+          "name": "bookDetail"
+        },
+        "TargetCustomerDetail": {
+          "id": "customerDetail",
+          "name": "customerDetail"
+        }
+      }
+    },
+    "rootView": {
+      "viewName": "libraryfrontend.view.App",
+      "type": "XML",
+      "id": "App"
+    }
+  }
+}

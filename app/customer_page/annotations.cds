@@ -1,0 +1,1 @@
+using library as service from '../../srv/library';

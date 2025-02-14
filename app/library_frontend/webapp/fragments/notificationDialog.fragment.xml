@@ -1,0 +1,36 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <Popover
+        id="myNotificationPopover"
+        showHeader="true"
+        title="Notifications"
+        placement="Bottom"
+        contentWidth="500px"
+        initialFocus="close"
+        >
+        
+        <NotificationList items="{oNotification>/notifications}" noDataText="No Notifications" >
+           
+            
+            <!-- Corrected Binding for NotificationListItem -->
+            <NotificationListItem 
+                title="{oNotification>title}" 
+                description="{oNotification>description}" 
+                showCloseButton="{oNotification>showClose}"
+                close="onCloseNotificationBtn"
+            />
+            
+        </NotificationList>
+        <footer>
+			<OverflowToolbar>
+				<ToolbarSpacer/>
+				<Button
+					id="close"
+					text="Close"
+					press=".handleCloseNotificationPop" />
+			</OverflowToolbar>
+		</footer>
+
+    </Popover>
+</core:FragmentDefinition>

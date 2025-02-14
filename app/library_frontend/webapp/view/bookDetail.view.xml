@@ -1,0 +1,11 @@
+<mvc:View
+    controllerName="libraryfrontend.controller.bookDetail"
+    xmlns="sap.uxap"
+    xmlns:m="sap.m"
+    xmlns:f="sap.f"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:layout="sap.ui.layout"
+>
+
+</mvc:View>

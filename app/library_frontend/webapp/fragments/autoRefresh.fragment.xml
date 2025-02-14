@@ -1,0 +1,18 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <Popover
+        id="myPopover"
+        showHeader="false"
+        placement="Bottom"
+        contentWidth="250px"
+        initialFocus="off">
+       
+
+        <SelectList selectionChange="onTimepress"
+					items="{oAutoRfsh>/autoRefreshOptions}">
+					<core:Item key="{oAutoRfsh>time}" text="{oAutoRfsh>text}" />
+		</SelectList>
+
+    </Popover>
+</core:FragmentDefinition>

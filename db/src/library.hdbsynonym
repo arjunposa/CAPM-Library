@@ -1,0 +1,34 @@
+{
+  "BOOKS": {
+    "target": {
+      "object": "BOOKS",
+      "schema": "LIBRARY"
+    }
+  },
+  "AUTHORS": {
+    "target": {
+      "object": "AUTHORS",
+      "schema": "LIBRARY"
+    }
+  },
+  "BORROWEDBOOKS": {
+    "target": {
+      "object": "BORROWEDBOOKS",
+      "schema": "LIBRARY"
+    }
+  }
+  ,
+  "CUSTOMERS": {
+    "target": {
+      "object": "CUSTOMERS",
+      "schema": "LIBRARY"
+    }
+  },
+  
+  "CUSTOMERSREVIEW": {
+    "target": {
+      "object": "CUSTOMERSREVIEW",
+      "schema": "LIBRARY"
+    }
+  }
+}

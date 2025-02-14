@@ -1,0 +1,39 @@
+###
+GET http://localhost:4004/odata/v4/library/books(3594623c-dfbd-4bd8-83c6-4a43c0ef3dee) HTTP/1.1
+
+
+###
+POST http://localhost:4004/odata/v4/library/books HTTP/1.1
+Content-Type:  application/json
+
+ {
+      "GENRE": "Fantasy",
+      "ISBN": "9780439708187",
+      "PRICE": "19.99",
+      "PUBLISHED_YEAR": "2001-01-01",
+      "RATING": "2",
+      "STOCK": 80,
+      "TITLE": "Fantastic Beasts and Where to Find Them"
+    }
+
+###
+POST http://localhost:4004/odata/v4/library/borrowedBooks HTTP/1.1
+Content-Type: application/json
+
+{
+"ACTUAL_RETURN_DATE": "2025-01-12",
+"BOOK_ISBN": "ISBN1",
+"BOOK_NAME": "BOOK1",
+"CUSTOMER_EMAIL": "EMAIL1234",
+"CUSTOMER_NAME": "CUSTOMER1",
+"QUANTITY": 2
+}
+
+###
+PATCH  http://localhost:4004/odata/v4/library/borrowedBooks(986852d0-d21a-4b09-9d9b-9320874865e9) HTTP/1.1
+Content-Type: application/json
+
+{
+"ACTUAL_RETURN_DATE": "2025-01-13",
+"REMARKS": "GOOD Customer"
+}

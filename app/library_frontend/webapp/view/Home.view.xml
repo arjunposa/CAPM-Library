@@ -1,0 +1,392 @@
+<mvc:View
+    xmlns:layout="sap.ui.layout"
+    controllerName="libraryfrontend.controller.Home"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:tnt="sap.tnt"
+    xmlns="sap.m"
+>
+    <tnt:ToolHeader
+        id="shellLikeToolHeader"
+        class="sapUiTinyMargin"
+        >
+        <Title
+            text="LIBRARY"
+            wrapping="false"
+            id="productName"
+        >
+            <layoutData>
+                <OverflowToolbarLayoutData priority="Disappear" />
+            </layoutData>
+        </Title>
+        <ToolbarSpacer />
+        <SearchField
+            width="20rem"
+            id="searchField"
+        >
+            <layoutData>
+                <OverflowToolbarLayoutData
+                    priority="Low"
+                    group="1"
+                />
+            </layoutData>
+        </SearchField>
+        <ToolbarSpacer id="spacer">
+            <layoutData>
+                <OverflowToolbarLayoutData
+                    priority="Low"
+                    group="1"
+                />
+            </layoutData>
+        </ToolbarSpacer>
+
+        <Button
+            icon="sap-icon://refresh"
+            type="Transparent"
+            tooltip="Refresh"
+            press="onRefresh"
+        >
+            <layoutData>
+                <OverflowToolbarLayoutData priority="NeverOverflow" />
+            </layoutData>
+        </Button>
+        <Button
+            id="autoRefresh"
+            icon="sap-icon://restart"
+            type="Transparent"
+            tooltip="Auto Refresh"
+            press="onAutoRefresh"
+        >
+            <layoutData>
+                <OverflowToolbarLayoutData priority="NeverOverflow" />
+            </layoutData>
+        </Button>
+        <Button
+        id="homeNotification"
+            icon="sap-icon://bell"
+            type="Transparent"
+            tooltip="Notification"
+            badgeStyle="Default"
+            press="onNotificationBtnPress"
+        >
+            <layoutData>
+                <OverflowToolbarLayoutData priority="NeverOverflow" />
+            </layoutData>
+            <customData>
+                <BadgeCustomData
+                    key="badge"
+                    value="{oNotification>/length}"
+                    visible="true"
+                    
+                />
+            </customData>
+        </Button>
+        <tnt:ToolHeaderUtilitySeparator />
+        <ToolbarSpacer width="1.125rem" />
+        <Avatar
+            src="test-resources/sap/tnt/images/Woman_avatar_01.png"
+            displaySize="XS"
+            press=".onAvatarPressed"
+            tooltip="Profile"
+        >
+            <layoutData>
+                <OverflowToolbarLayoutData priority="NeverOverflow" />
+            </layoutData>
+        </Avatar>
+    </tnt:ToolHeader>
+    <VBox id="messageContainer" />
+    <Panel
+        class="sapUiTinyMarginBegin sapUiTinyMarginEnd"
+        width="100%"
+        height="100%"
+    >
+        <IconTabBar
+            id="idIconTabBarStretchContent"
+            stretchContentHeight="true"
+            backgroundDesign="Transparent"
+            applyContentPadding="true"
+            expanded="{device>/isNoPhone}"
+            class="sapUiResponsiveContentPadding"
+        >
+            <items>
+                <IconTabFilter
+                    text="Books ({=${LibraryData>/books/$count} ? ${LibraryData>/books/$count} : 0})"
+                    key="Book"
+                >
+                    <ScrollContainer
+                        id="booksScroll"
+                        width="100%"
+                        height="100%"
+                        vertical="true"
+                        horizontal="false"
+                    >
+                        <Table
+                            id="bookTable"
+                            inset="false"
+                            showSeparators="Inner"
+                            items="{path : 'LibraryData>/books'
+                                  
+                            }"
+                        >
+                            <headerToolbar>
+                                <Toolbar>
+                                    <SearchField
+                                        id="titleSearchField"
+                                        width="auto"
+                                        liveChange="onSearchBookTitle"
+                                        placeholder="Enter Book Title"
+                                    />
+                                    <ToolbarSpacer />
+
+                                    <Button
+                                        tooltip="New Book"
+                                        icon="sap-icon://add-coursebook"
+                                        type="Transparent"
+                                    />
+                                </Toolbar>
+                            </headerToolbar>
+                            <columns>
+                                <Column width="12em">
+                                    <Text text="ISBN" />
+                                </Column>
+                                <Column width="12em">
+                                    <Text text="Name" />
+                                </Column>
+                                <Column width="12em">
+                                    <Text text="Gener" />
+                                </Column>
+
+                                <Column width="12em">
+                                    <Text text="Stock" />
+                                </Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem
+                                    type="Navigation"
+                                    id="BookList"
+                                    press=".onListItemPress"
+                                >
+                                    <cells>
+                                        <ObjectIdentifier
+                                            text="{LibraryData>ISBN}"
+                                        />
+                                        <ObjectIdentifier
+                                            text="{LibraryData>TITLE}"
+                                        />
+                                        <ObjectIdentifier
+                                            text="{LibraryData>GENRE}"
+                                        />
+                                        <ObjectStatus
+                                            text="{path: 'LibraryData>STOCK', formatter:'.formatter.stockWarning'}"
+                                            state="{path: 'LibraryData>STOCK', formatter: '.formatter.statusState'}"
+                                        />
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </ScrollContainer>
+                </IconTabFilter>
+                <IconTabSeparator />
+                <!-- Customers -->
+                <IconTabFilter
+                    text="Customers ({=${LibraryData>/customers/$count} ? ${LibraryData>/customers/$count} : 0})"
+                    key="Customer"
+                >
+                    <ScrollContainer
+                        height="100%"
+                        width="100%"
+                        horizontal="false"
+                        vertical="true"
+                    >
+                        <Table
+                            id="customerTable"
+                            inset="false"
+                            showSeparators="Inner"
+                            items="{
+                    path: 'LibraryData>/customers'
+                    }"
+                        >
+                            <headerToolbar>
+                                <Toolbar>
+                                    <SearchField
+                                        id="customerSearchField"
+                                        width="auto"
+                                        liveChange="onSearchCustomer"
+                                        placeholder="Enter Name or ID"
+                                    />
+                                    <ToolbarSpacer />
+
+                                    <Button
+                                        icon="sap-icon://add-employee"
+                                        tooltip="Add Customer"
+                                        type="Transparent"
+                                        press="onCreateCustomer"
+                                    />
+                                </Toolbar>
+                            </headerToolbar>
+                            <columns>
+                                <Column width="12em">
+                                    <Text text="Name" />
+                                </Column>
+                                <Column width="12em">
+                                    <Text text="Email" />
+                                </Column>
+                                <Column width="12em">
+                                    <Text text="Phone Number" />
+                                </Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem
+                                    type="Navigation"
+                                    press=".onListItemPress"
+                                >
+                                    <cells>
+                                        <ObjectIdentifier
+                                            text="{LibraryData>NAME}"
+                                        />
+                                        <ObjectIdentifier
+                                            text="{LibraryData>EMAIL}"
+                                        />
+                                        <Text
+                                            text="{LibraryData>PHONE}"
+                                        />
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </ScrollContainer>
+                </IconTabFilter>
+
+                <!-- Borrowed Books -->
+                <IconTabSeparator />
+
+                <IconTabFilter
+                    text="Borrowed Books ({=${LibraryData>/borrowedBooks/$count} ? ${LibraryData>/borrowedBooks/$count} : 0})"
+                    key="Borrowed Books"
+                >
+                    <ScrollContainer
+                        height="90%"
+                        width="100%"
+                        horizontal="false"
+                        vertical="true"
+                    >
+                        <Table
+                            id="borrowedTable"
+                            inset="false"
+                            showSeparators="Inner"
+                            rememberSelections="true"
+                            growing="true"
+                            growingThreshold="15"
+                            growingScrollToLoad="true"
+                            items="{ 
+                            path: 'LibraryData>/borrowedBooks',
+                            sorter: {
+				            path: 'BORROWED_DATE',
+                            descending:true
+			                        }
+                                    }"
+                        >
+                            <headerToolbar>
+                                <Toolbar>
+                                    <SearchField
+                                        id="borrowedSearchField"
+                                        width="auto"
+                                        liveChange="onSearchBorrowCustomer"
+                                        placeholder="Enter customer name"
+                                    />
+                                    <ToolbarSpacer />
+
+                                    <Button
+                                        tooltip="Group"
+                                        icon="sap-icon://group-2"
+                                        press="handleGroupButtonPressed"
+                                    />
+
+                                    <Button
+                                        icon="sap-icon://edit"
+                                        tooltip="Edit"
+                                        type="Transparent"
+                                        press="onEditBorrowedBook"
+                                        visible="{ui>/editMode}"
+                                    />
+                                    <Button
+                                        text="Save"
+                                        type="Transparent"
+                                        press="onSaveBorrowedBook"
+                                        visible="{ui>/saveMode}"
+                                    />
+                                    <Button
+                                        text="Cancel"
+                                        press="onCancelEditBorrowedBook"
+                                        visible="{ui>/saveMode}"
+                                    />
+                                    <Button
+                                        icon="sap-icon://add-coursebook"
+                                        tooltip="Add Book"
+                                        type="Transparent"
+                                        press="onNewBorrow"
+                                        visible="{ui>/editMode}"
+                                    />
+                                </Toolbar>
+                            </headerToolbar>
+                            <columns>
+                                <Column width="12em">
+                                    <Text text="Book Name" />
+                                </Column>
+                                <Column width="12em">
+                                    <Text text="Name" />
+                                </Column>
+                                <Column width="12em">
+                                    <Text text="Email" />
+                                </Column>
+
+                                <Column width="12em">
+                                    <Text text="Borrowed Date" />
+                                </Column>
+                                <Column width="12em">
+                                    <Text text="Due Date" />
+                                </Column>
+                                <Column width="12em">
+                                    <Text text="Actual Return Date" />
+                                </Column>
+                                <Column width="12em">
+                                    <Text text="Remarks" />
+                                </Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem>
+                                    <cells>
+                                        <ObjectIdentifier
+                                            title="{LibraryData>BOOK_NAME}"
+                                            text="{LibraryData>BOOK_ISBN}"
+                                        />
+                                        <ObjectIdentifier
+                                            text="{LibraryData>CUSTOMER_NAME}"
+                                        />
+                                        <ObjectIdentifier
+                                            text="{LibraryData>CUSTOMER_EMAIL}"
+                                        />
+
+                                        <ObjectIdentifier
+                                            text="{LibraryData>BORROWED_DATE}"
+                                        />
+                                        <ObjectIdentifier
+                                            text="{LibraryData>DUE_DATE}"
+                                        />
+                                        <DatePicker
+                                            value="{LibraryData>ACTUAL_RETURN_DATE}"
+                                            editable="{ui>/tableEdit}"
+                                        />
+                                        <Input
+                                            value="{LibraryData>REMARKS}"
+                                            editable="{ui>/tableEdit}"
+                                        />
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </ScrollContainer>
+                </IconTabFilter>
+            </items>
+        </IconTabBar>
+    </Panel>
+</mvc:View>
