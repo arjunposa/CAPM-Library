@@ -142,6 +142,13 @@
                                         icon="sap-icon://add-coursebook"
                                         type="Transparent"
                                     />
+
+                                    <Button
+                                        tooltip="Upload Book Excel"
+                                        icon="sap-icon://excel-attachment"
+                                        type="Transparent"
+                                        press="onExcelUploadBtn"
+                                    />
                                 </Toolbar>
                             </headerToolbar>
                             <columns>

@@ -1,3 +1,6 @@
+
+
+
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
     "sap/m/MessageToast",
@@ -37,12 +40,12 @@ sap.ui.define([
             this.getView().setModel(nBorrowBook, "nBorrow");
 
             let nCustomer = new sap.ui.model.json.JSONModel({
-                NAME:"",
-                EMAIL:"",
-                PHONE:"",
-                ADDRESS:"",
-                GENDER:"",
-                TYPE:""
+                NAME: "",
+                EMAIL: "",
+                PHONE: "",
+                ADDRESS: "",
+                GENDER: "",
+                TYPE: ""
             })
             this.getView().setModel(nCustomer, "nCustomer");
 
@@ -353,10 +356,10 @@ sap.ui.define([
                     aNotifications.unshift({
                         title: "Auto Refresh",
                         description: `Auto refresh schedule is on for ${sSelectedKey == 60
-                                ? "every minute"
-                                : sSelectedKey == 300
-                                    ? "every 5 minutes"
-                                    : sSelectedKey + " seconds"
+                            ? "every minute"
+                            : sSelectedKey == 300
+                                ? "every 5 minutes"
+                                : sSelectedKey + " seconds"
                             }.`,
                         showClose: true,
                         isRead: false,
@@ -387,7 +390,7 @@ sap.ui.define([
                 clearInterval(this._countdownInterval);
             }
 
-            let remainingTime = time; 
+            let remainingTime = time;
             let oMessageContainer = this.getView().byId("messageContainer");
             oMessageContainer.removeAllItems();
 
@@ -468,6 +471,102 @@ sap.ui.define([
             this.byId("myNotificationPopover").close();
         },
 
+        // Excel file uploader
+        onExcelUploadBtn: function (oEvent) {
+            if (!this.exUpDialog) {
+                this.exUpDialog = Fragment.load({
+                    id: this.getView().getId(),
+                    name: "libraryfrontend.fragments.excelUpload",
+                    controller: this
+                }).then(oDialog => {
+                    this.getView().addDependent(oDialog);
+                    return oDialog;
+                });
+            }
+            this.exUpDialog.then(oDialog => oDialog.open());
+        },
+        onCloseExDialog: function () {
+            let oFileUploader = this.getView().byId("fileUploader");
+            oFileUploader.setValue('')
+            this.byId('excelUploadDialog').close();
+            
+        },
+        handleUploadPress: function () {
+            let oFileUploader = this.getView().byId("fileUploader");
+            if (!oFileUploader.getValue()) {
+                MessageToast.show("Choose a file first");
+                return;
+            }
+            let oFile = oFileUploader.oFileUpload.files[0];
+            var oPanel = this.byId("excelUploadDialog");
+			
+            this._fileName = oFile.name
+            this._fileType = oFile.type
+            let that = this
+            let reader = new FileReader()
+            reader.onload = function (e) {
+                var sBase64 = e.target.result.split(",")[1]; // Extract base64 without metadata
+                console.log(e.target.result);
+                console.time()
+                oPanel.setBusy(true);
+                that._fileUpload({
+                    fileName: that._fileName,
+                    fileType: that._fileType,
+                    file: sBase64
+                }, oPanel)
+                console.timeEnd()
+                oFileUploader.setValue('')
+            }
+
+
+            reader.readAsDataURL(oFile)
+
+
+
+
+
+        },
+        _fileUpload: function (formData, oPanel) {
+            let sUrl = `${this.getOwnerComponent().getModel("LibraryData").getServiceUrl()}uploadExcel`
+            var oNotificationModel = this.getView().getModel("oNotification");
+            var aNotifications = oNotificationModel.getProperty("/notifications");
+            let LibraryData = this.getView().getModel('LibraryData')
+            let that = this
+            $.ajax({
+                url: sUrl,
+                method: 'POST',
+                data: JSON.stringify(formData),
+                contentType: 'application/json',
+                success: function (oData) {
+                    console.log(oData)
+                    // oPanel.setBusy(false);
+                    // Add new notification
+                    aNotifications.unshift({
+                        title: "📚 Bulk Books Data Upload",
+                        description: `
+                        ${oData.value.
+                            Insert} -- 
+                        ${oData.value.Update}.`,
+                        showClose: true,
+                        isRead: false
+                    });
+                    oNotificationModel.setProperty("/length", aNotifications.length)
+                    oPanel.setBusy(false);
+                    LibraryData.refresh()
+                    that.onCloseExDialog()
+                    
+                },
+                error: function (error) {
+                    // console.log(error)
+                    // oPanel.setBusy(false);
+                    MessageBox.error(error.responseJSON.
+                        error.message
+                    )
+                    oPanel.setBusy(false);
+
+                }
+            })
+        },
 
         _handleValueHelpClose: function (oEvent) {
             var oSelectedItem = oEvent.getParameter("selectedItem");
@@ -563,27 +662,54 @@ sap.ui.define([
             this.custDialog.then(oDialog => oDialog.open());
 
         },
-        onCloseDialog : function() {
+        onCloseDialog: function () {
             this.byId('customerFormDialog').close()
         },
-        onGenderSelect: function(oEvent){
+        onGenderSelect: function (oEvent) {
             var oRadioButtonGroup = this.byId("rbg3");
-    var selectedIndex = oRadioButtonGroup.getSelectedIndex(); 
+            var selectedIndex = oRadioButtonGroup.getSelectedIndex();
 
-    if (selectedIndex !== -1) {
-        var selectedButton = oRadioButtonGroup.getButtons()[selectedIndex];
-        var selectedText = selectedButton.getText();
-        sap.m.MessageToast.show("Selected Gender: " + selectedText);
-        return selectedText;
-    } else {
-        sap.m.MessageToast.show("No gender selected");
-        return null;
-
-    }
-},
-        onSubmitCustomer : function () {
+            if (selectedIndex !== -1) {
+                var selectedButton = oRadioButtonGroup.getButtons()[selectedIndex];
+                var selectedText = selectedButton.getText();
+                this.getView().getModel('nCustomer').setProperty('/GENDER', selectedText)
+                return selectedText;
+            } else {
+                sap.m.MessageToast.show("No gender selected");
+                return null;
+            }
+        },
+        onSubmitCustomer: function () {
             let nCustomer = this.getView().getModel('nCustomer')
             console.log(nCustomer.getData())
+            let LibraryData = this.getView().getModel('LibraryData')
+            let sUrl = `${this.getOwnerComponent().getModel("LibraryData").getServiceUrl()}customers`
+            $.ajax({
+                url: sUrl,
+                method: 'POST',
+                data: JSON.stringify(nCustomer.getData()),
+                contentType: 'application/json',
+                success: function (oData) {
+                    console.log(oData)
+                    // Add new notification
+                    aNotifications.unshift({
+                        title: "👤 New Customer Added",
+                        description: `
+                        ${oData.NAME} 
+                        .`,
+                        showClose: true,
+                        isRead: false
+                    });
+                    oNotificationModel.setProperty("/length", aNotifications.length)
+                    LibraryData.refresh()
+                    that.onCancelBorrowBook()
+                },
+                error: function (error) {
+                    MessageBox.error(error.responseJSON.
+                        error.message
+                    )
+                }
+            })
         }
 
 

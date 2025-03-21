@@ -1,6 +1,7 @@
 const cds = require('@sap/cds');
 const { BOLD } = require('@sap/cds/lib/utils/colors');
 const { BOOKS, CUSTOMERSREVIEW, BORROWEDBOOKS } = cds.entities;
+const {readExcel} = require('./handelers/ExcelReader');
 
 module.exports = cds.service.impl(async function () {
 
@@ -93,4 +94,13 @@ module.exports = cds.service.impl(async function () {
         newDate.setDate(newDate.getDate() + days);
         return newDate;
     }
+
+    this.on('uploadExcel', async (req, next) => {
+        
+        let resp = await readExcel(BOOKS,req.data.file)
+        return resp.msg
+        
+    });
+
+
 });

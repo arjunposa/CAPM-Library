@@ -6,10 +6,13 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
-    "@sap/cds": "^8",
-    "express": "^4",
     "@cap-js/hana": "^1",
-    "@sap/xssec": "^4"
+    "@sap/cds": "^8",
+    "@sap/xssec": "^4",
+    "exceljs": "^4.4.0",
+    "express": "^4",
+    "fs": "^0.0.1-security",
+    "multer": "^1.4.5-lts.1"
   },
   "devDependencies": {
     "@cap-js/cds-types": "^0.8.0",

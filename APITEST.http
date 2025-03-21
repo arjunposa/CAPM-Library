@@ -37,3 +37,10 @@ Content-Type: application/json
 "ACTUAL_RETURN_DATE": "2025-01-13",
 "REMARKS": "GOOD Customer"
 }
+
+
+###
+POST http://localhost:4004/odata/v4/library/uploadExcel
+Content-Type: application/json
+
+{ "file": "db/Library Books.xlsx" }
