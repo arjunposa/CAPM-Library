@@ -1,0 +1,218 @@
+<mvc:View
+    xmlns:layout="sap.ui.layout"
+    controllerName="libraryfrontend.controller.customerDetail"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:f="sap.f"
+    xmlns:w="sap.ui.integration.widgets"
+    xmlns:card="sap.f.cards"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:core="sap.ui.core"
+>
+    <f:ShellBar
+        title="{LibraryData>NAME}"
+        secondTitle="{path: 'LibraryData>TYPE', formatter:'.formatter.cType'}"
+        showNavButton="true"
+        navButtonPressed="onNavBack"
+    >
+        <f:profile>
+            <Avatar
+                initials="{path: 'LibraryData>NAME', formatter: '.formatter.Initials'}" press="onProfile"
+            />
+        </f:profile>
+    </f:ShellBar>
+    <IconTabBar
+        id="idIconTabBar"
+        select="handleIconTabBarSelect"
+        headerBackgroundDesign="Transparent"
+        class="sapUiResponsiveContentPadding sapUiSmallMarginBegin"
+    >
+        <items>
+            <IconTabFilter text="Home">
+            <ScrollContainer
+                width="100%"
+                height="100%"
+                horizontal="false"
+                vertical="true"
+            >
+                <f:GridContainer>
+                    <f:layout>
+                        <f:GridContainerSettings
+                            rowSize="5rem"
+                            columnSize="5rem"
+                            gap="1rem"
+                        />
+                    </f:layout>
+
+                    <w:Card
+                        id="objectCard"
+                        manifest="{manifests>/object}"
+                        action="onAction"
+                    >
+                        <w:layoutData>
+                            <f:GridContainerItemLayoutData
+                                minRows="4"
+                                columns="3"
+                            />
+                        </w:layoutData>
+                    </w:Card>
+
+                    <w:Card
+                        id="tableCard"
+                        manifest="{manifests>/tableCard}"
+                        width="800px"
+                        height="auto"
+                    />
+                </f:GridContainer>
+                <w:Card
+                    id="reviewCard1"
+                    manifest="{manifests>/reviewCard}"
+                    width="500px"
+                    height="auto"
+                />
+                 </ScrollContainer>
+            </IconTabFilter>
+            <IconTabFilter text="Borrow Books">
+                <HBox width="100%">
+                    <Table
+                        id="borrowBooksTable"
+                        items="{LibraryData>BOOKS}"
+                        width="800px"
+                        growing="true"
+                    >
+                        <columns>
+                            <Column>
+                                <header>
+                                    <Text text="Book Name" />
+                                </header>
+                            </Column>
+                            <Column>
+                                <header>
+                                    <Text text="Borrowed Date" />
+                                </header>
+                            </Column>
+                            <Column>
+                                <header>
+                                    <Text text="Quantity" />
+                                </header>
+                            </Column>
+                            <Column>
+                                <header>
+                                    <Text text="Actual Return Date" />
+                                </header>
+                            </Column>
+                            <Column>
+                                <header>
+                                    <Text text="Remarks" />
+                                </header>
+                            </Column>
+                            <Column>
+                                <header>
+                                    <Text text="Is Reviewed" />
+                                </header>
+                            </Column>
+                             <Column>
+                                <header>
+                                    <Text text="Is Reviewed value" />
+                                </header>
+                            </Column>
+                        </columns>
+                        <items>
+                            <ColumnListItem class="sapUiMediumPadding">
+                                <cells>
+                                    <ObjectIdentifier
+                                        title="{LibraryData>BOOK_NAME}"
+                                        text="{LibraryData>BOOK_ISBN}"
+                                    />
+                                    <Text text="{LibraryData>BORROWED_DATE}" />
+                                    <Text
+                                        text="{LibraryData>QUANTITY}"
+                                    />
+                                    <Text
+                                        text="{LibraryData>ACTUAL_RETURN_DATE}"
+                                    />
+                                    <Text text="{LibraryData>REMARKS}" />
+                                    <Button
+                                        text="Write Review"
+                                        id="reviewButton"
+                                        press=".onWriteReview"
+                                        enabled="{path: 'LibraryData>IS_REVIEWED', formatter:'.formatter.BtnEnable'}"
+                                    />
+                                    <Text text="{LibraryData>IS_REVIEWED}" />
+                                </cells>
+                            </ColumnListItem>
+                        </items>
+                    </Table>
+
+                    <f:Card
+                        class="sapUiLargeMarginBegin"
+                        width="300px"
+                        visible="false"
+                        id="wReviewCard"
+                    >
+                        <f:header>
+                            <card:Header
+                                title="Write Review"
+                                subtitle="{wReviewModel>/BOOK_NAME}"
+                            />
+                        </f:header>
+                        <f:content>
+                            <layout:VerticalLayout
+                                class="sapUiSmallMargin"
+                                width="100%"
+                            >
+                                <Label text="Book Name" />
+                                <Input
+                                    type="Text"
+                                    value="{wReviewModel>/BOOK_NAME}"
+                                    editable="false"
+                                />
+                                <Label text="Book ISBN" />
+                                <Input
+                                    type="Text"
+                                    value="{wReviewModel>/BOOK_ISBN}"
+                                    editable="false"
+                                />
+                                <Label text="Rating" />
+                                <RatingIndicator
+                                    id="RI_default"
+                                    maxValue="5"
+                                    class="sapUiSmallMarginBottom"
+                                    value="{wReviewModel>/RATING}"
+                                    tooltip="Rating"
+                                />
+                                <Label text="Review" />
+                                <TextArea
+                                    value="{wReviewModel>/REVIEW}"
+                                    editable="true"
+                                    width="100%"
+                                />
+                                <HBox
+                                    width="100%"
+                                    alignItems="End"
+                                    justifyContent="End"
+                                >
+                                    <Button
+                                        text="Submit"
+                                        class="sapUiTinyMargin"
+                                        type="Accept"
+                                        press="onReviewSubmit"
+                                    />
+                                    <Button
+                                        text="Cancel"
+                                        class="sapUiTinyMargin"
+                                        type="Reject"
+                                        press="onReviewCancel"
+                                    />
+                                </HBox>
+                            </layout:VerticalLayout>
+                        </f:content>
+                    </f:Card>
+                </HBox>
+            </IconTabFilter>
+
+            <IconTabFilter text="Drone Maintenance" />
+            <IconTabFilter text="Drone Development" />
+        </items>
+    </IconTabBar>
+</mvc:View>

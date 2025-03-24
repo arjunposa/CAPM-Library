@@ -66,7 +66,7 @@ entity CUSTOMERSREVIEW {
       REVIEW         : String(255);
       RATING         : Decimal(34);
       REVIEW_DATE    : Date;
-      CUSTOMER_EMAIL : String(10);
+      CUSTOMER_EMAIL : String;
       BOOK_ISBN      : String(25);
       BOOK_NAME      : String(255);
 }

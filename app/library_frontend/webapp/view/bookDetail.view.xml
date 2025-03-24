@@ -7,5 +7,178 @@
     xmlns:mvc="sap.ui.core.mvc"
     xmlns:layout="sap.ui.layout"
 >
+    <m:Page
+        showNavButton="true"
+        navButtonPress="onNavBack"
+    >
+        <ObjectPageLayout
+            id="ObjectPageLayout"
+            showTitleInHeaderContent="true"
+            alwaysShowContentHeader="true"
+            preserveHeaderStateOnScroll="true"
+            headerContentPinnable="true"
+            isChildPage="true"
+            upperCaseAnchorBar="false"
+            showAnchorBar="true"
+        >
+            <headerTitle>
+                <ObjectPageDynamicHeaderTitle>
+                    <expandedHeading>
+                        <m:Title
+                            text="{parts: [{path: 'LibraryData>TITLE'}]}"
+                            wrapping="true"
+                        />
+                    </expandedHeading>
+                    <expandedContent>
+                        <m:Text text="Written By : {LibraryData>AUTHOR/NAME}" />
+                    </expandedContent>
+                    <snappedHeading>
+                        <m:FlexBox
+                            wrap="Wrap"
+                            fitContainer="true"
+                            alignItems="Center"
+                        >
+                            <m:Title
+                                text="{parts: [{path: 'LibraryData>TITLE'}]}"
+                                wrapping="true"
+                                class="sapUiSmallMarginEnd"
+                            />
+                        </m:FlexBox>
+                    </snappedHeading>
+                    <snappedContent>
+                        <m:Text text="Written By: {LibraryData>AUTHOR/NAME}" />
+                    </snappedContent>
 
+                    <actions>
+                        <!-- Edit Button -->
+                        <m:ToggleButton
+                            text="Edit"
+                            type="Emphasized"
+                            enabled="{= !${view>/bEditMode}}"
+                            press=".onEditToggleButtonPress"
+                        />
+
+                        <!-- Save and Cancel Buttons -->
+                        <m:Button
+                            text="Save"
+                            type="Emphasized"
+                            visible="{view>/bEditMode}"
+                            press=".onSavePress"
+                        />
+                        <m:Button
+                            text="Cancel"
+                            type="Reject"
+                            visible="{view>/bEditMode}"
+                            press=".onCancelPress"
+                        />
+                    </actions>
+                </ObjectPageDynamicHeaderTitle>
+            </headerTitle>
+            <headerContent>
+                <layout:HorizontalLayout>
+                    <layout:VerticalLayout class="sapUiSmallMarginBeginEnd">
+                        <m:ObjectStatus
+                            title="Genre"
+                            text="{LibraryData>GENRE}"
+                        />
+                        <m:ObjectStatus
+                            title="Published Year"
+                            text="{LibraryData>PUBLISHED_YEAR}"
+                        />
+                    </layout:VerticalLayout>
+
+                    <layout:VerticalLayout class="sapUiSmallMarginBeginEnd" >
+                    <m:ObjectStatus
+                        text="Rating"
+                        state="Success"
+                    />
+                    <m:RatingIndicator
+                    
+                        maxValue="5"
+                        value="{LibraryData>RATING}"
+                        tooltip="{LibraryData>RATING}"
+                        displayOnly="true"
+                    />
+                    <m:ObjectStatus
+                        title="Total Reviews"
+                        class="sapUiBoldText"
+                        text="10000"
+                    />
+                    
+                    </layout:VerticalLayout>
+
+                    <layout:VerticalLayout class="sapUiSmallMarginBeginEnd">
+                        <layout:HorizontalLayout>
+                            <m:ObjectStatus
+                                title="Price"
+                                text="${LibraryData>PRICE}"
+                                visible="{= !${view>/bEditMode}}"
+                            />
+                            <m:HBox
+                                alignItems="Center"
+                                justifyContent="Start"
+                            >
+                                <m:Label
+                                    text="Price: "
+                                    visible="{view>/bEditMode}"
+                                />
+                                <m:Input
+                                    value="{LibraryData>PRICE}"
+                                    visible="{view>/bEditMode}"
+                                    editable="true"
+                                    width="50px"
+                                    class="sapUiTinyMarginBegin"
+                                />
+                            </m:HBox>
+                        </layout:HorizontalLayout>
+
+                     
+
+                        <layout:HorizontalLayout>
+                            <m:ObjectStatus
+                                title="Stock"
+                                text="{path: 'LibraryData>STOCK', formatter:'.formatter.stockWarning'}"
+                                state="{path: 'LibraryData>STOCK', formatter: '.formatter.statusState'}"
+                                visible="{= !${view>/bEditMode}}"
+                            />
+                            <m:HBox
+                                alignItems="Center"
+                                justifyContent="Start"
+                                
+                            >
+                                <m:Label
+                                    text="Stock: "
+                                    visible="{view>/bEditMode}"
+                                />
+                                <m:HBox visible="{view>/bEditMode}">
+                                    <m:Input
+                                        value="{LibraryData>STOCK}"
+                                        editable="false"
+                                        class="sapUiSmallMarginEnd sapUiTinyMarginBegin"
+                                        id="stock"
+                                        width="50px"
+                                    />
+                                    <m:Input
+                                        placeholder="New stock"
+                                        liveChange=".onNewStockLiveChange"
+                                        id="nStock"
+                                        width="70px"
+                                    />
+                                </m:HBox>
+                            </m:HBox>
+                        </layout:HorizontalLayout>
+                    </layout:VerticalLayout>
+
+                    
+                </layout:HorizontalLayout>
+            </headerContent>
+
+            <sections>
+                <!-- General Information Section -->
+                <ObjectPageSection title="General Information">
+                    
+                </ObjectPageSection>
+            </sections>
+        </ObjectPageLayout>
+    </m:Page>
 </mvc:View>

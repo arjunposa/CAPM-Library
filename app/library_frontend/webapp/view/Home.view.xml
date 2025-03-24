@@ -8,7 +8,7 @@
     <tnt:ToolHeader
         id="shellLikeToolHeader"
         class="sapUiTinyMargin"
-        >
+    >
         <Title
             text="LIBRARY"
             wrapping="false"
@@ -61,7 +61,7 @@
             </layoutData>
         </Button>
         <Button
-        id="homeNotification"
+            id="homeNotification"
             icon="sap-icon://bell"
             type="Transparent"
             tooltip="Notification"
@@ -76,7 +76,6 @@
                     key="badge"
                     value="{oNotification>/length}"
                     visible="true"
-                    
                 />
             </customData>
         </Button>
@@ -123,6 +122,8 @@
                             id="bookTable"
                             inset="false"
                             showSeparators="Inner"
+                            growing="true"
+                            growingThreshold="22"
                             items="{path : 'LibraryData>/books'
                                   
                             }"
@@ -152,9 +153,11 @@
                                 </Toolbar>
                             </headerToolbar>
                             <columns>
+
                                 <Column width="12em">
                                     <Text text="ISBN" />
                                 </Column>
+                                
                                 <Column width="12em">
                                     <Text text="Name" />
                                 </Column>
@@ -163,7 +166,7 @@
                                 </Column>
 
                                 <Column width="12em">
-                                    <Text text="Stock" />
+                                    <Text text="Availability" />
                                 </Column>
                             </columns>
                             <items>
@@ -176,9 +179,12 @@
                                         <ObjectIdentifier
                                             text="{LibraryData>ISBN}"
                                         />
+                                         
                                         <ObjectIdentifier
                                             text="{LibraryData>TITLE}"
                                         />
+                                           
+                                        
                                         <ObjectIdentifier
                                             text="{LibraryData>GENRE}"
                                         />
@@ -253,9 +259,7 @@
                                         <ObjectIdentifier
                                             text="{LibraryData>EMAIL}"
                                         />
-                                        <Text
-                                            text="{LibraryData>PHONE}"
-                                        />
+                                        <Text text="{LibraryData>PHONE}" />
                                     </cells>
                                 </ColumnListItem>
                             </items>

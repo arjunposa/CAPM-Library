@@ -20,9 +20,10 @@ module.exports = cds.service.impl(async function () {
                     await cds.run(`SELECT AVG(Rating) as avgRating FROM ${CUSTOMERSREVIEW} WHERE BOOK_ISBN = '${bookDetails[0].ISBN}'`)
                     : false;
 
-                console.log(avgRating);
-                if (avgRating && avgRating[0].avgRating) {
-                    await UPDATE(BOOKS).set({ RATING: avgRating[0].avgRating }).where({ ID: bookID });
+                // console.log(avgRating, 'Rating');
+                if (avgRating && avgRating[0].AVGRATING) {
+                    await UPDATE(BOOKS).set({ RATING: parseFloat(avgRating[0].AVGRATING)  }).where({ ID: bookID });
+                    // console.log(typeof parseFloat(avgRating[0].AVGRATING) )
                 }
             }
         } catch (error) {
