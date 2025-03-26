@@ -17,6 +17,7 @@ sap.ui.define([
 
     return Controller.extend("libraryfrontend.controller.Home", {
         onInit() {
+
             this.oModel = this.getOwnerComponent().getModel("LibraryData");
             this.oTitleSearch = this.byId('genreTitleSearch')
             this.oInitialSearch = this.byId('allTitleSearch')
@@ -124,6 +125,18 @@ sap.ui.define([
 
         onSearchCustomer: function (oEvent) {
             this._FilterHandler("NAME", oEvent.getSource().getValue(), 'customerTable')
+        },
+        _handleCustValueHelpSearch: function (oEvent) {
+            this._listFilter("NAME", oEvent.getParameter("value"), oEvent)
+        },
+        _handleValueBookHelpSearch: function (oEvent) {
+            this._listFilter("TITLE", oEvent.getParameter("value"), oEvent)
+        },
+
+        _listFilter: function (sField, sValue, sEvent) {
+            var oFilter = new Filter(sField, FilterOperator.Contains, sValue);
+            var oBinding = sEvent.getParameter("itemsBinding");
+            oBinding.filter([oFilter]);
         },
 
         _FilterHandler: function (field, query, tableName) {
@@ -489,7 +502,7 @@ sap.ui.define([
             let oFileUploader = this.getView().byId("fileUploader");
             oFileUploader.setValue('')
             this.byId('excelUploadDialog').close();
-            
+
         },
         handleUploadPress: function () {
             let oFileUploader = this.getView().byId("fileUploader");
@@ -499,7 +512,7 @@ sap.ui.define([
             }
             let oFile = oFileUploader.oFileUpload.files[0];
             var oPanel = this.byId("excelUploadDialog");
-			
+
             this._fileName = oFile.name
             this._fileType = oFile.type
             let that = this
@@ -545,7 +558,7 @@ sap.ui.define([
                         title: "📚 Bulk Books Data Upload",
                         description: `
                         ${oData.value.
-                            Insert} -- 
+                                Insert} -- 
                         ${oData.value.Update}.`,
                         showClose: true,
                         isRead: false
@@ -554,7 +567,7 @@ sap.ui.define([
                     oPanel.setBusy(false);
                     LibraryData.refresh()
                     that.onCloseExDialog()
-                    
+
                 },
                 error: function (error) {
                     // console.log(error)
@@ -605,7 +618,7 @@ sap.ui.define([
         },
         _handleCustValueHelpClose: function (oEvent) {
             var oSelectedItem = oEvent.getParameter("selectedItem");
-            console.log(oSelectedItem.getProperty('title'))
+            // console.log(oSelectedItem.getProperty('title'))
             let cNameInput = this.byId('customerNameInput')
             let cEmailInput = this.byId('customerEmailInput')
 
@@ -619,34 +632,38 @@ sap.ui.define([
             var oNotificationModel = this.getView().getModel("oNotification");
             var aNotifications = oNotificationModel.getProperty("/notifications");
             let that = this
-            $.ajax({
-                url: sUrl,
-                method: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(nBorrow.getData()),
-                success: function (oData) {
-                    console.log(oData)
-                    // Add new notification
-                    aNotifications.unshift({
-                        title: "📚 New Borrowing Entry Added",
-                        description: `
-                        ${oData.BOOK_NAME} 
-                        borrowed by ${oData.CUSTOMER_NAME} 
-                        on ${oData.BORROWED_DATE}. 
-                        Due by ${oData.DUE_DATE}.`,
-                        showClose: true,
-                        isRead: false
-                    });
-                    oNotificationModel.setProperty("/length", aNotifications.length)
-                    LibraryData.refresh()
-                    that.onCancelBorrowBook()
-                },
-                error: function (error) {
-                    MessageBox.error(error.responseJSON.
-                        error.message
-                    )
-                }
-            })
+            if (nBorrow.getData().QUANTITY && nBorrow.getData().CUSTOMER_NAME && nBorrow.getData().BOOK_NAME) {
+                $.ajax({
+                    url: sUrl,
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(nBorrow.getData()),
+                    success: function (oData) {
+                        console.log(oData)
+                        // Add new notification
+                        aNotifications.unshift({
+                            title: "📚 New Borrowing Entry Added",
+                            description: `
+                            ${oData.BOOK_NAME} 
+                            borrowed by ${oData.CUSTOMER_NAME} 
+                            on ${oData.BORROWED_DATE}. 
+                            Due by ${oData.DUE_DATE}.`,
+                            showClose: true,
+                            isRead: false
+                        });
+                        oNotificationModel.setProperty("/length", aNotifications.length)
+                        LibraryData.refresh()
+                        that.onCancelBorrowBook()
+                    },
+                    error: function (error) {
+                        MessageBox.error(error.responseJSON.
+                            error.message
+                        )
+                    }
+                })
+            } else {
+                MessageBox.error('Please fill Required fields')
+            }
         },
         onCreateCustomer: function (oEvent) {
             if (!this.custDialog) {
@@ -684,6 +701,9 @@ sap.ui.define([
             console.log(nCustomer.getData())
             let LibraryData = this.getView().getModel('LibraryData')
             let sUrl = `${this.getOwnerComponent().getModel("LibraryData").getServiceUrl()}customers`
+            var oNotificationModel = this.getView().getModel("oNotification");
+            var aNotifications = oNotificationModel.getProperty("/notifications");
+            let that = this
             $.ajax({
                 url: sUrl,
                 method: 'POST',
@@ -710,7 +730,142 @@ sap.ui.define([
                     )
                 }
             })
+        },
+        onBorrowSelect: function (oEvent) {
+
+            const oSelectedItem = oEvent.getParameter("listItem");
+            const oContext = oSelectedItem.getBindingContext("LibraryData");
+            this._selectedBorrow = oContext.getObject()
+            // console.log(oContext.getObject())
+            // this._createInovoice(this._selectedBorrow)
+        },
+        onExportBorrow: function (oEvent) {
+
+            if (this._selectedBorrow.ACTUAL_RETURN_DATE) {
+                
+                if (!this.bExportDialog) {
+                    this.bExportDialog = Fragment.load({
+                        id: this.getView().getId(),
+                        name: "libraryfrontend.fragments.borrowExport",
+                        controller: this
+                    }).then(oDialog => {
+                        this.getView().addDependent(oDialog);
+                        this._createInovoice(this._selectedBorrow)
+                        return oDialog;
+                    });
+                }
+                this.bExportDialog.then(oDialog => oDialog.open());
+
+
+
+            } else {
+                // this._createInovoice(this._selectedBorrow)
+                MessageToast.show(`${this._selectedBorrow.BOOK_NAME} is not exportable`)
+
+            }
+            this._createInovoice(this._selectedBorrow)
+            
+
+        },
+        onCloseInnvoice: function () {
+            // this._selectedBorrow = ''
+            this.byId('richTextDialog').close()
+        },
+        _createInovoice: function (_selectedBorrow) {
+
+            let sUrl = `${this.getOwnerComponent().getModel("LibraryData").getServiceUrl()}createInnvoice`
+
+            let that = this
+
+            $.ajax({
+                url: sUrl,
+                method: 'POST',
+                data: JSON.stringify({ "borrowId": _selectedBorrow.ID }),
+                contentType: 'application/json',
+                success: function (oData) {
+                    console.log(oData)
+                    let invoice = oData.value
+                    console.log(invoice)
+
+                    let html = that._generateInvoiceHTML(invoice);
+                    that.getView().byId("rteEditor").setValue(html);
+                    // RTE.setBusy(false)
+
+                },
+                error: function (error) {
+                    console.log(Error)
+                }
+            })
+        },
+
+        _generateInvoiceHTML: function (invoice) {
+            
+
+
+            return `
+                <div style="text-align: center;">
+                    <h1>State Library</h1>
+                    <h5>123 Main Street, Bengaluru, India</h5>
+                </div>
+                <div style="text-align: left;">
+                    <p><strong>Invoice Number:</strong> ${invoice.invoice_number}</p>
+                    <p><strong>Date:</strong> ${new Date(invoice.date).toLocaleDateString()}</p>
+                    <p><strong>Customer Name:</strong> ${invoice.customer}</p>
+                    <p><strong>Customer Email:</strong> ${invoice.email}</p>
+                    <p><strong>Customer Address:</strong> ${invoice.address}</p>
+                </div>
+                <h3>Invoice</h3>
+                <table style="width: 100%; border-collapse: collapse; border: 1px solid black;">
+                    <thead>
+                        <tr style="background-color: #f2f2f2;">
+                            <th style="border: 1px solid black;">Book ISBN</th>
+                            <th style="border: 1px solid black;">Book Name</th>
+                            <th style="border: 1px solid black;">Borrowed Date</th>
+                            <th style="border: 1px solid black;">Quantity</th>
+                            <th style="border: 1px solid black;">Price</th>
+                            <th style="border: 1px solid black;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="border: 1px solid black;">${invoice.items[0].book_isbn}</td>
+                            <td style="border: 1px solid black;">${invoice.items[0].book_name}</td>
+                            <td style="border: 1px solid black;">${invoice.items[0].borrowed_date}</td>
+                            <td style="border: 1px solid black;">${invoice.items[0].quantity}</td>
+                            <td style="border: 1px solid black;">$${(invoice.subtotal / invoice.items[0].quantity).toFixed(2)}</td>
+                            <td style="border: 1px solid black;">$${invoice.subtotal.toFixed(2)}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="5" style="text-align: right; font-weight: bold;">Subtotal:</td>
+                            <td style="border: 1px solid black;">$${invoice.subtotal.toFixed(2)}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="5" style="text-align: right; font-weight: bold;">Tax (18%):</td>
+                            <td style="border: 1px solid black;">$${invoice.tax.toFixed(2)}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="5" style="text-align: right; font-weight: bold;">Grand Total:</td>
+                            <td style="border: 1px solid black;">$${invoice.total.toFixed(2)}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div style="text-align: center; margin-top: 30px; border-top: 1px solid #ccc;">
+                    <p>Thank you for your business!</p>
+                    <p><strong>Contact us:</strong> support@company.com | +123-456-7890</p>
+                    <p><em>Invoice generated on ${new Date().toLocaleDateString()}</em></p>
+                </div>
+            `;
+        },
+        onShareInnvoice: function () {
+            console.log('on Share Innvoice')
+            let invoiceData = this.getView().byId("rteEditor").getValue()
+            let base64Invoice = btoa(unescape(encodeURIComponent(invoiceData)));
+
+            console.log("Base64 Encoded Invoice:", base64Invoice);
         }
+
+
+
 
 
     });

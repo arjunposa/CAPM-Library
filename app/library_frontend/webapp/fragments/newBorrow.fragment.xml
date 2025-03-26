@@ -20,6 +20,7 @@
                         <Label
                             text="Book Name"
                             labelFor="bookNameInput"
+                            required="true"
                         />
                         <Input
                             id="bookNameInput"
@@ -38,11 +39,13 @@
                             id="bookISBNInput"
                             width="100%"
                             value="{nBorrow>/BOOK_ISBN}"
+                            editable="false"
                         />
 
                         <Label
                             text="Quantity"
                             labelFor="bookQuantityInput"
+                            required="true"
                         />
                         <Input
                             id="bookQuantityInput"
@@ -60,7 +63,10 @@
                         <Label
                             text="Customer Name"
                             labelFor="customerNameInput"
+                            required="true"
                         />
+                        <HBox alignItems="Center"
+                                justifyContent="Start" >
                         <Input
                             id="customerNameInput"
                             showValueHelp="true"
@@ -68,6 +74,14 @@
                             width="100%"
                             value="{nBorrow>/CUSTOMER_NAME}"
                         />
+                        <Button
+                                        icon="sap-icon://add-employee"
+                                        tooltip="Add Customer"
+                                        type="Transparent"
+                                        press="onCreateCustomer"
+                                        class="sapUiTinyMarginBegin"
+                                    />
+                        </HBox>
 
                         <Label
                             text="Customer Email"
@@ -77,6 +91,7 @@
                             id="customerEmailInput"
                             width="100%"
                             value="{nBorrow>/CUSTOMER_EMAIL}"
+                            editable="false"
                         />
                     </l:content>
                 </l:VerticalLayout>

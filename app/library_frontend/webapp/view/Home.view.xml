@@ -288,6 +288,8 @@
                             growing="true"
                             growingThreshold="15"
                             growingScrollToLoad="true"
+                            mode="SingleSelect"
+                            selectionChange="onBorrowSelect"
                             items="{ 
                             path: 'LibraryData>/borrowedBooks',
                             sorter: {
@@ -337,6 +339,13 @@
                                         press="onNewBorrow"
                                         visible="{ui>/editMode}"
                                     />
+                                    <Button
+                                        icon="sap-icon://attachment-text-file"
+                                        tooltip="Export Book"
+                                        type="Transparent"
+                                        press="onExportBorrow"
+                                        visible="{ui>/editMode}"
+                                    />
                                 </Toolbar>
                             </headerToolbar>
                             <columns>
@@ -364,7 +373,7 @@
                                 </Column>
                             </columns>
                             <items>
-                                <ColumnListItem>
+                                <ColumnListItem >
                                     <cells>
                                         <ObjectIdentifier
                                             title="{LibraryData>BOOK_NAME}"

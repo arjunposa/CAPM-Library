@@ -18,7 +18,10 @@ service library {
 
     action uploadExcel(fileName : String,
                        fileType : String,
-                       file : String) returns String;
+                       file : String)        returns String;
 
+    action createInnvoice(borrowId : String) returns String;
+
+    action sendEmail(email : String, content : Binary) returns String;
 
 }

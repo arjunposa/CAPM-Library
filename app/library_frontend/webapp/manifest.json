@@ -110,6 +110,13 @@
           "target": [
             "TargetCustomerDetail"
           ]
+        },
+        {
+          "name": "RouteBorrowedDetail",  
+          "pattern": "borrowID={id}",
+          "target": [
+            "TargetBorrowedDetail"
+          ]
         }
       ],
       "targets": {
@@ -124,6 +131,10 @@
         "TargetCustomerDetail": {
           "id": "customerDetail",
           "name": "customerDetail"
+        },
+        "TargetBorrowedDetail": {
+          "id": "borrowedDetail",
+          "name": "borrowedDetail"
         }
       }
     },

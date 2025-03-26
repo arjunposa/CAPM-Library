@@ -2,8 +2,8 @@
 	xmlns="sap.m"
 	xmlns:core="sap.ui.core">
 	<SelectDialog
-		id="valueHelpDialog"
-		title="Books"
+		id="valueCustHelpDialog"
+		title="Customers"
 		items="{LibraryData>/customers}"
 		search="_handleCustValueHelpSearch"
 		confirm="_handleCustValueHelpClose"
@@ -11,7 +11,7 @@
         contentWidth="500px"
         contentHeight="500px"
 		>
-		<StandardListItem
+		<StandardListItem id="CustList"
 			title="{LibraryData>NAME}"
 			description="{LibraryData>EMAIL}" />
 	</SelectDialog>
